@@ -9,7 +9,6 @@ package com.bridgelabz.greetingapp.controller;
 
 import com.bridgelabz.greetingapp.dto.GreetingDto;
 import com.bridgelabz.greetingapp.dto.UserDto;
-import com.bridgelabz.greetingapp.entity.GreetingEntity;
 import com.bridgelabz.greetingapp.service.GreetingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +38,16 @@ public class GreetingAppController {
 
     //http://localhost:8080/add-greeting
     @PostMapping("/add-greeting")
-    public GreetingEntity addGreeting(@RequestBody UserDto user) {
+    public String addGreeting(@RequestBody UserDto user) {
         String message = String.format(template, user.getFirstName() + " " + user.getLastName());
         GreetingDto greetingDto = new GreetingDto();
         greetingDto.setMessage(message);
         return greetingService.addMessage(greetingDto);
+    }
+
+    //http://localhost:8080/findBy/1
+    @GetMapping("/findBy/{id}")
+    public Object findGreeting(@PathVariable(value = "id") int id) {
+        return greetingService.findMessageById(id);
     }
 }
