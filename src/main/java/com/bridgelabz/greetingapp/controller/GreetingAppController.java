@@ -7,18 +7,19 @@ package com.bridgelabz.greetingapp.controller;
  * @since 05-12-2021
  */
 
-import com.bridgelabz.greetingapp.GreetingAppApplication;
-import com.bridgelabz.greetingapp.controller.service.GreetingAppService;
-import com.bridgelabz.greetingapp.dto.Greeting;
-import com.bridgelabz.greetingapp.dto.User;
+import com.bridgelabz.greetingapp.dto.GreetingDto;
+import com.bridgelabz.greetingapp.dto.UserDto;
+import com.bridgelabz.greetingapp.entity.GreetingEntity;
+import com.bridgelabz.greetingapp.service.GreetingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class GreetingAppController {
     private static final String template = "Hello %s!";
-    private final AtomicLong counter = new AtomicLong();
+
+    @Autowired
+    private GreetingService greetingService;
 
     @RequestMapping(value = {"", "/"})
     @ResponseBody
@@ -26,16 +27,22 @@ public class GreetingAppController {
         return "Hello World!";
     }
 
-    //http://localhost:8080/greeting3?firstName=Kunal&lastName=Suryawanshi
+    //http://localhost:8080/greeting?firstName=Kunal&lastName=Suryawanshi
     @GetMapping("/greeting")
-    public Greeting greeting(@RequestParam(value = "firstName", defaultValue = "") String firstName,
-                             @RequestParam(value = "lastName", defaultValue = "") String lastName) {
-        User user = new User();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        if (user.getFirstName() == null && user.getLastName() == null) {
+    public String greeting(@RequestParam(value = "firstName", defaultValue = "") String firstName,
+                           @RequestParam(value = "lastName", defaultValue = "") String lastName) {
+        if (firstName == null && lastName == null) {
             home();
         }
-        return new Greeting(counter.incrementAndGet(), String.format(template, user));
+        return String.format(template, firstName + " " + lastName);
+    }
+
+    //http://localhost:8080/add-greeting
+    @PostMapping("/add-greeting")
+    public GreetingEntity addGreeting(@RequestBody UserDto user) {
+        String message = String.format(template, user.getFirstName() + " " + user.getLastName());
+        GreetingDto greetingDto = new GreetingDto();
+        greetingDto.setMessage(message);
+        return greetingService.addMessage(greetingDto);
     }
 }
