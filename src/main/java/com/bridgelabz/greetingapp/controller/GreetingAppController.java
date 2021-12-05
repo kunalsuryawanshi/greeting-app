@@ -50,4 +50,10 @@ public class GreetingAppController {
     public Object findGreeting(@PathVariable(value = "id") int id) {
         return greetingService.findMessageById(id);
     }
+
+    //http://localhost:8080/get-all
+    @GetMapping("/get-all")
+    public Object getAllMessages() {
+        return greetingService.getAllMessages();
+    }
 }
